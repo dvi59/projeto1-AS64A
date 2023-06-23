@@ -15,7 +15,7 @@ const Register = () => {
 
     function cadUser() {
         console.log("Cadastrando...", type)
-        axios.post('http://localhost:1337/auth/register', {
+        axios.post('http://localhost:1337/user/register', {
             name: name,
             email: email,
             password: pass,

@@ -1,25 +1,26 @@
 const User = require('../model/User')
+const bcrypt = require('bcrypt');
+const { publishErrorResponse, publishSuccessResponse } = require('../rabbitMQUtils')
+
 
 const addUser = async (req,res) =>{
     const { name, email, password,tipo } = req.body
 
     if (!name) {
-        return res.status(422).json({ msg: "Nome obrigatório" })
+        return publishErrorResponse(res, 'Nome obrigatório');
     }
     if (!email) {
-        return res.status(422).json({ msg: "Email obrigatório" })
+        return publishErrorResponse(res, 'Email obrigatório');
     }
     if (!password) {
-        return res.status(422).json({ msg: "Senha obrigatório" })
+        return publishErrorResponse(res, 'Senha obrigatório');
     }
-    if (!tipo && tipo === 0){
-        return res.status(422).json({ msg: "Informe o Tipo"})
-    }
+  
 
     const userExists = await User.findOne({ email: email })
 
     if (userExists) {
-        return res.status(422).json({ msg: "Esse email já existe na base de dados" })
+        return publishErrorResponse(res, 'Usuário já existe na base de dados');
     }
 
     const salt = await bcrypt.genSalt(12)
@@ -34,10 +35,10 @@ const addUser = async (req,res) =>{
 
     try {
         await user.save()
-        res.status(200).json({ msg: 'Usuário Cadastrado com sucesso' })
+        return publishSuccessResponse(res, 'Usuário Cadastrado com sucesso');
     } catch (err) {
         console.log(err)
-        res.status(500).json({ msg: 'ERROR!' })
+        return publishErrorResponse(res, 'Erro')
     }
 };
 
