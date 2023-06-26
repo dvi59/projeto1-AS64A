@@ -1,31 +1,32 @@
 const amqp = require('amqplib');
+const moment = require('moment');
 
 async function publishErrorResponse(res, errorMsg) {
     const message = JSON.stringify({ error: errorMsg });
-    await publishMessage(message);
+    await publishMessage("admin", message);
 
     return res.status(422).json({ msg: errorMsg });
 }
 
 async function publishSuccessResponse(res, successMsg) {
     const message = JSON.stringify({ success: successMsg });
-    await publishMessage(message);
+    await publishMessage("admin", message);
 
     return res.status(200).json({ msg: successMsg });
 }
 
-async function publishMessage(message) {
+async function publishMessage(queue, message) {
     try {
+        const timestamp = moment().format('DD/MM/YYYY HH:mm:ss');
+        const messageWithTimestamp = `${timestamp}: ${message}`;
+
+
         const connection = await amqp.connect('amqp://localhost');
-        const channel = await connection.createChannel();
+        const channel = await (connection).createChannel();
 
-        const exchange = 'meu_exchange';
-        const routingKey = 'minha_fila';
+        await channel.sendToQueue(queue, Buffer.from(messageWithTimestamp));
 
-        await channel.assertExchange(exchange, 'direct');
-        await channel.publish(exchange, routingKey, Buffer.from(message));
-
-        console.log('Mensagem publicada:', message);
+        console.log('Mensagem publicada:', messageWithTimestamp);
 
         await channel.close();
         await connection.close();
@@ -34,7 +35,39 @@ async function publishMessage(message) {
     }
 }
 
+async function consumeMessages(queue) {
+    try {
+        // Conectar ao servidor RabbitMQ
+        const connection = await amqp.connect('amqp://localhost');
+
+        // Criar um canal
+        const channel = await connection.createChannel();
+
+        // Verificar se a fila existe, caso contrário, criá-la
+        await channel.assertQueue(queue);
+
+        console.log('Aguardando mensagens. Pressione CTRL+C para sair.');
+
+        // Consumir as mensagens da fila
+        channel.consume(queue, (message) => {
+            if (message !== null) {
+                const content = message.content.toString();
+                console.log('Mensagem recebida:', content);
+
+                // Aqui você pode realizar a ação desejada, como fazer o log da mensagem para o usuário admin
+
+                // Confirmar o processamento da mensagem
+                channel.ack(message);
+            }
+        });
+
+    } catch (error) {
+        console.error('Erro ao consumir mensagens:', error);
+    }
+}
+
 module.exports = {
     publishErrorResponse,
     publishSuccessResponse,
+    consumeMessages,
 };

@@ -2,10 +2,16 @@ const Car = require('../model/Car')
 const redis = require('redis');
 const client = redis.createClient();
 const { publishErrorResponse, publishSuccessResponse } = require('../rabbitMQUtils')
-
+const { validationResult } = require('express-validator');
+const { sanitizeObject } = require('../sanitizerUtil');
 
 const searchCars = async (req, res) => {
     try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return publishErrorResponse(res, "Erro")
+        }
+
         client.get('cars', async (error, cachedCars) => {
             if (error) throw error;
 
@@ -13,14 +19,15 @@ const searchCars = async (req, res) => {
                 const cars = JSON.parse(cachedCars);
                 return res.status(200).json({ cars });
             } else {
-                
+
                 const cars = await Car.find();
 
                 if (!cars) {
                     return publishErrorResponse(res, "Veículo Não encontrado");
                 }
-                client.set('cars', JSON.stringify(cars));
-                res.status(200).json({ cars });
+                const sanitizedCars = cars.map((car) => sanitizeObject(car));
+                client.set('cars', JSON.stringify(sanitizedCars));
+                res.status(200).json({ cars:sanitizedCars });
             }
         });
 
