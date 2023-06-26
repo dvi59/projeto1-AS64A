@@ -7,11 +7,17 @@ const MessageReceiver = () => {
 
     useEffect(() => {
         const socket = io('http://localhost:4000');
-        console.log(socket)
+
 
         socket.on('Message', (message) => {
-            console.log(message)
-            setMessages((prevMessages) => [...prevMessages, message]);
+            const [dateTime, errorMessage] = message.split(': ');
+            const [date, time] = dateTime.split(' ');
+            const formattedErrorMessage = errorMessage
+                .replace(/^{"/, '') // Remover a primeira chave e as aspas iniciais
+                .replace(/"}$/, '') // Remover as aspas finais
+                .replace(/^error/, ''); // Remover a palavra "error" no início da descrição
+            const formattedMessage = `${date} ${time} - ${formattedErrorMessage}`;
+            setMessages((prevMessages) => [...prevMessages, formattedMessage]);
         });
 
 

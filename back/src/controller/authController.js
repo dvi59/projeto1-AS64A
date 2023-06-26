@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../model/User');
+const session = require('express-session');
 const { publishErrorResponse, publishSuccessResponse } = require('../rabbitMQUtils');
 
 const login = async (req, res) => {
@@ -25,7 +26,7 @@ const login = async (req, res) => {
       if (!checkPassword) {
         return publishErrorResponse(res,  "Usuário ou Senha inválidos");
       }
-  
+      const userId = user._id;
       const tipo = user.tipo;
       const secret = process.env.SECRET;
       const token = jwt.sign(
@@ -38,6 +39,11 @@ const login = async (req, res) => {
       res.cookie("token", token, {
         httpOnly: true,
       }).status(200).json({ msg: "AUTENTICADO COM SUCESSO", token, tipo });
+
+      
+      req.session.userId = userId;
+      console.log(req.session.userId + "!!!!!!!!!!!!")
+
     } catch (error) {
       console.log(error);
       res.status(500).json({ msg: "ERROR!" });

@@ -1,5 +1,6 @@
 require('dotenv').config()
 const express = require('express');
+const session = require('express-session');
 const app = express();
 const server = require('http').createServer(app);
 const io = require('socket.io')(server, {
@@ -10,8 +11,6 @@ const io = require('socket.io')(server, {
 
 const cookieParser = require('cookie-parser')
 const cors = require('cors')
-
-
 
 const { consumeMessages } = require('./src/rabbitMQUtils')
 
@@ -25,6 +24,11 @@ const carRoutes = require('./src/routes/carRoutes')
 app.use(cors())
 app.use(cookieParser())
 app.use(express.json())
+app.use(session({
+    secret: 'banoff@@123/va3w1@@4',
+    resave: false,
+    saveUninitialized: true,
+}));
 
 app.use('/auth', authRoutes);
 app.use('/user', userRoutes);
@@ -59,6 +63,4 @@ io.on('connection', async(socket) => {
     socket.on('solicitar-mensagens', () =>{
         consumeMessages('admin',io);
     })
-
-
 });
