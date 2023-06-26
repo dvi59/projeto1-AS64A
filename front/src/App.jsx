@@ -6,6 +6,7 @@ import Login from './screens/Login';
 import Register from './screens/Register';
 import CarSearch from "./screens/CarSearch";
 import CarAdd from "./screens/CarAdd";
+import MessageReceiver from "./screens/MessageReceiver";
 
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
@@ -22,6 +23,7 @@ export default function App() {
               <Route path="/register" element={<Register />} />
               <Route path="/carsearch" element={<CarSearch />} />
               <Route path="/caradd" element={<CarAdd />} />
+              <Route path="/logger" element={<MessageReceiver />} />
             </Routes>
           </BrowserRouter>
         </div>

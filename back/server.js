@@ -1,10 +1,23 @@
 require('dotenv').config()
-const express = require('express')
+const express = require('express');
+const app = express();
+const server = require('http').createServer(app);
+const io = require('socket.io')(server, {
+    cors: {
+        origin: '*'
+    },
+});
+
 const cookieParser = require('cookie-parser')
 const cors = require('cors')
 
+
+
+const { consumeMessages } = require('./src/rabbitMQUtils')
+
+
 const mongoose = require('mongoose')
-const app = express()
+
 
 const authRoutes = require('./src/routes/authRoutes')
 const userRoutes = require('./src/routes/userRoutes')
@@ -30,3 +43,22 @@ mongoose.connect('mongodb+srv://root:root@cluster0.rwu0yz6.mongodb.net/?retryWri
 
 
 
+server.listen(4000, () => {
+    console.log("WebSocket na porta 4000")
+})
+
+io.on('connection', async(socket) => {
+
+   console.log("Conectado...WS")
+  
+    socket.on('disconnect', () => {
+      console.log('Cliente desconectado');
+      //connection.close();
+    });
+
+    socket.on('solicitar-mensagens', () =>{
+        consumeMessages('admin',io);
+    })
+
+
+});
