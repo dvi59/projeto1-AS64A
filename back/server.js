@@ -1,8 +1,10 @@
 require('dotenv').config()
 const express = require('express');
 const session = require('express-session');
+const redis = require('redis');
 const app = express();
 const server = require('http').createServer(app);
+const client = redis.createClient();
 const io = require('socket.io')(server, {
     cors: {
         origin: '*'
@@ -47,9 +49,6 @@ mongoose.connect('mongodb+srv://root:root@cluster0.rwu0yz6.mongodb.net/?retryWri
 
 
 
-server.listen(4000, () => {
-    console.log("WebSocket na porta 4000")
-})
 
 io.on('connection', async(socket) => {
 
@@ -57,10 +56,19 @@ io.on('connection', async(socket) => {
   
     socket.on('disconnect', () => {
       console.log('Cliente desconectado');
-      //connection.close();
+      socket.disconnect();
     });
 
     socket.on('solicitar-mensagens', () =>{
         consumeMessages('admin',io);
     })
 });
+
+
+
+
+
+
+server.listen(4000, () => {
+    console.log("WebSocket na porta 4000")
+})

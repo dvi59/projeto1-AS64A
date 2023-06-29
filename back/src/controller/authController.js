@@ -42,7 +42,7 @@ const login = async (req, res) => {
 
       
       req.session.userId = userId;
-      console.log(req.session.userId + "!!!!!!!!!!!!")
+      
 
     } catch (error) {
       console.log(error);

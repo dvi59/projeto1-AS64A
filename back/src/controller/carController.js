@@ -1,38 +1,44 @@
 const Car = require('../model/Car')
-const redis = require('redis');
-const client = redis.createClient();
+const Redis = require('redis')
+
+const client = Redis.createClient();
+client.on('error', err => console.log('Redis Client Error', err));
+
+
+
+const redisHost = 'localhost';
+const redisPort = 6379;
+const redisPassword = 'root';
+const DEFAULT_EXPIRATION = '3600';
+
+// Criação do cliente Redis com as configurações
+
 const { publishErrorResponse, publishSuccessResponse } = require('../rabbitMQUtils')
 const { validationResult } = require('express-validator');
 const { sanitizeObject } = require('../sanitizerUtil');
 
 const searchCars = async (req, res) => {
+    await client.connect();
     try {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return publishErrorResponse(res, "Erro")
-        }
+        const cachedCars = await client.get('cars');
+        if (cachedCars) {
+            const cars = JSON.parse(cachedCars);
+            return res.status(200).json({ car: cars });
+        } else {
+            console.log("Load Mongo")
+            const cars = await Car.find();
 
-        client.get('cars', async (error, cachedCars) => {
-            if (error) throw error;
-
-            if (cachedCars) {
-                const cars = JSON.parse(cachedCars);
-                return res.status(200).json({ cars });
-            } else {
-
-                const cars = await Car.find();
-
-                if (!cars) {
-                    return publishErrorResponse(res, "Veículo Não encontrado");
-                }
-                const sanitizedCars = cars.map((car) => sanitizeObject(car));
-                client.set('cars', JSON.stringify(sanitizedCars));
-                res.status(200).json({ cars:sanitizedCars });
+            if (!cars) {
+                return publishErrorResponse(res, "Veículo não encontrado");
             }
-        });
 
+            client.set('cars', JSON.stringify(cars));
+            return res.status(200).json({ car: cars });
+        }
     } catch (err) {
         return publishErrorResponse(res, 'Erro ao buscar carros');
+    } finally {
+        await client.disconnect();
     }
 };
 

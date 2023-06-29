@@ -24,6 +24,7 @@ const MessageReceiver = () => {
         socket.emit('solicitar-mensagens');
 
         return () => {
+            console.log("Monstado e desconectado")
             socket.disconnect();
         };
     }, []);

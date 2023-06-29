@@ -1,6 +1,7 @@
 const amqp = require('amqplib');
 const moment = require('moment');
 //const io = require('socket.io')();
+//const userId = 
 
 async function publishErrorResponse(res, errorMsg) {
     const message = JSON.stringify({ error: errorMsg });
@@ -60,7 +61,6 @@ async function consumeMessages(queue,io) {
                 channel.ack(message);
             }
         });
-
     } catch (error) {
         console.error('Erro ao consumir mensagens:', error);
     }

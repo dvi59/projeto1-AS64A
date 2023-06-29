@@ -49,6 +49,7 @@ const CarSearch = () => {
                 <input className="form-control" type="input" value={carname} onChange={(e) => setCarname(e.target.value)} onKeyDown={handleQualquer} />
                 <button id="searchBtn" type="button" className="btn btn-outline-secondary" onClick={carQuery}>Buscar</button>
                 <button className="btn btn-outline-secondary" id="registerBtnCar" onClick={() => navigate('/caradd')} >+</button>
+                <button className="btn btn-outline-secondary" id="registerBtnCar" onClick={() => navigate('/logger')} >Logger</button>
             </div>
             <table id="result" className="table">
                 <tr>
