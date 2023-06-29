@@ -22,7 +22,8 @@ const mongoose = require('mongoose')
 
 const authRoutes = require('./src/routes/authRoutes')
 const userRoutes = require('./src/routes/userRoutes')
-const carRoutes = require('./src/routes/carRoutes')
+const carRoutes = require('./src/routes/carRoutes');
+const { resolve } = require('path');
 app.use(cors())
 app.use(cookieParser())
 app.use(express.json())
@@ -55,17 +56,13 @@ io.on('connection', async(socket) => {
    console.log("Conectado...WS")
   
     socket.on('disconnect', () => {
-      console.log('Cliente desconectado');
-      socket.disconnect();
+        socket.disconnect();
     });
 
     socket.on('solicitar-mensagens', () =>{
         consumeMessages('admin',io);
     })
 });
-
-
-
 
 
 

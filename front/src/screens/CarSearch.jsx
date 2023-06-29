@@ -42,6 +42,8 @@ const CarSearch = () => {
         }
     }
 
+    
+
     return (
         <div id="search" className="search">
             <div className="car-error" id="carNameError">{errorMsg}</div>

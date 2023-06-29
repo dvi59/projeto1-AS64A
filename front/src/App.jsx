@@ -23,7 +23,7 @@ export default function App() {
               <Route path="/register" element={<Register />} />
               <Route path="/carsearch" element={<CarSearch />} />
               <Route path="/caradd" element={<CarAdd />} />
-              <Route path="/logger" element={<MessageReceiver />} />
+              <Route path="/logger" x='1' element={<MessageReceiver />} />
             </Routes>
           </BrowserRouter>
         </div>

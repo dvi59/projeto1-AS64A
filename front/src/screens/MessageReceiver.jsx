@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import io, { Socket } from 'socket.io-client';
 
-const MessageReceiver = () => {
+const MessageReceiver = (props) => {
 
     const [messages, setMessages] = useState([]);
 
     useEffect(() => {
+        console.log(props)
         const socket = io('http://localhost:4000');
 
 
