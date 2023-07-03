@@ -2,13 +2,14 @@ require('dotenv').config()
 const express = require('express');
 const fs = require('fs')
 const session = require('express-session');
-const redis = require('redis');
-const httpsOptions = {
-    key: fs.readFileSync('./src/httpsOptions/private.key'),
-    cert: fs.readFileSync('./src/httpsOptions/domain.crt'),
-}
 const app = express();
-const server = require('http').createServer(app);
+const server = require('https').createServer(
+    {
+        cert: fs.readFileSync('./src/httpsOptions/domain.crt'),
+        key: fs.readFileSync('./src/httpsOptions/private.key'),
+        passphrase: 'banana12',
+    },
+    app);
 const io = require('socket.io')(server, {
     cors: {
         origin: '*'
