@@ -22,7 +22,7 @@ const CarSearch = () => {
 
         const token = document.cookie.split('?').find((row) => row.startsWith('token='))?.split('=')[1]
         if (3 <= carname.length)
-            axios.get('http://localhost:1337/car/search', { headers: { Authorization: token } })
+            axios.get('http://localhost:1337/car/Cars', { headers: { Authorization: token } })
                 .then((res) => {
                     const carList = res.data.car.map((car) => {
                         if ((car.name.toLowerCase()).includes(carname.toLowerCase()))
@@ -50,8 +50,8 @@ const CarSearch = () => {
             <div className="input-search">
                 <input className="form-control" type="input" value={carname} onChange={(e) => setCarname(e.target.value)} onKeyDown={handleQualquer} />
                 <button id="searchBtn" type="button" className="btn btn-outline-secondary" onClick={carQuery}>Buscar</button>
-                <button className="btn btn-outline-secondary" id="registerBtnCar" onClick={() => navigate('/caradd')} >+</button>
-                <button className="btn btn-outline-secondary" id="registerBtnCar" onClick={() => navigate('/logger')} >Logger</button>
+                <button className="btn btn-outline-secondary" id="registerBtnCar" onClick={() => navigate('/Car')} >+</button>
+                
             </div>
             <table id="result" className="table">
                 <tr>

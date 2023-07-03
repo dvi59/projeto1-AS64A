@@ -20,10 +20,9 @@ export default function App() {
           <BrowserRouter>
             <Routes>
               <Route exact path="/" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/carsearch" element={<CarSearch />} />
-              <Route path="/caradd" element={<CarAdd />} />
-              <Route path="/logger" x='1' element={<MessageReceiver />} />
+              <Route path="/User" element={<Register />} />
+              <Route path="/Cars" element={<CarSearch />} />
+              <Route path="/Car" element={<CarAdd />} />
             </Routes>
           </BrowserRouter>
         </div>

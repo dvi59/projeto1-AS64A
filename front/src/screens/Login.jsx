@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 //import '../js/login.js';
 
-const loginURL = "http://localhost:1337/auth/login"
+const loginURL = "http://localhost:1337/auth/Login"
 
 const Login = () => {
     const navigate = useNavigate();
@@ -14,7 +14,6 @@ const Login = () => {
     const [msgError, setMsgError] = useState('');
 
     function loginMongo() {
-        console.log(">>> LOGIN START" + user + pass)
         axios.post(loginURL, {
             email: user,
             password: pass,
@@ -23,7 +22,7 @@ const Login = () => {
             const token = res.data.token
             const tipo = res.data.tipo
             document.cookie = "tipo=" + tipo + "?token=" + token + ";";
-            navigate('/carsearch')
+            navigate('/Cars')
 
         })
             .catch((error) => {
@@ -56,7 +55,7 @@ const Login = () => {
                     </div>
                     <div className="button">
 
-                        <button id="registerBtn" type="button" onClick={() => navigate('/register')}
+                        <button id="registerBtn" type="button" onClick={() => navigate('/User')}
                             className="btn btn-outline-primary">Cadastre-se</button>
                     </div>
 

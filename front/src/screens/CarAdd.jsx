@@ -15,7 +15,7 @@ const CarAdd = () => {
         console.log("Cadastrando Vecículo")
         const token = document.cookie.split('?').find((row) => row.startsWith('token='))?.split('=')[1]
         console.log("TOKEN DISPARADO PARA CADASTRO",token)
-        axios.post('http://localhost:1337/car/register', {
+        axios.post('http://localhost:1337/car/CarsAdd', {
             name: marca,
             modelo: modelo,
             ano: ano,
