@@ -3,6 +3,9 @@ const jwt = require('jsonwebtoken');
 const User = require('../model/User');
 const session = require('express-session');
 const { publishErrorResponse, publishSuccessResponse } = require('../rabbitMQUtils');
+//Depois de 5 min o token expira
+const expirationTime = 5 * 60 * 1000;
+const expirationDate = new Date(Date.now() + expirationTime);
 
 const login = async (req, res) => {
     const { email, password } = req.body;
@@ -38,6 +41,7 @@ const login = async (req, res) => {
   
       res.cookie("token", token, {
         httpOnly: true,
+        expires: expirationDate,
       }).status(200).json({ msg: "AUTENTICADO COM SUCESSO", token, tipo });
 
       

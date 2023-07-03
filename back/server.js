@@ -1,10 +1,14 @@
 require('dotenv').config()
 const express = require('express');
+const fs = require('fs')
 const session = require('express-session');
 const redis = require('redis');
+const httpsOptions = {
+    key: fs.readFileSync('./src/httpsOptions/private.key'),
+    cert: fs.readFileSync('./src/httpsOptions/domain.crt'),
+}
 const app = express();
 const server = require('http').createServer(app);
-const client = redis.createClient();
 const io = require('socket.io')(server, {
     cors: {
         origin: '*'
@@ -13,7 +17,8 @@ const io = require('socket.io')(server, {
 
 const cookieParser = require('cookie-parser')
 const cors = require('cors')
-
+const { morganMiddleware } = require('./src/loggerUtils');
+const limiterMiddleware  = require('./src/httpLimiter');
 const { consumeMessages } = require('./src/rabbitMQUtils')
 
 
@@ -23,7 +28,16 @@ const mongoose = require('mongoose')
 const authRoutes = require('./src/routes/authRoutes')
 const userRoutes = require('./src/routes/userRoutes')
 const carRoutes = require('./src/routes/carRoutes');
-const { resolve } = require('path');
+
+//Opções do servidor
+const options = {
+    maxPoolSize: 10, 
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  };
+
+app.use(morganMiddleware)
+app.use(limiterMiddleware)
 app.use(cors())
 app.use(cookieParser())
 app.use(express.json())
@@ -41,7 +55,7 @@ app.use('/car', carRoutes);
 
 mongoose.set("strictQuery", false);
 
-mongoose.connect('mongodb+srv://root:root@cluster0.rwu0yz6.mongodb.net/?retryWrites=true&w=majority')
+mongoose.connect('mongodb+srv://root:root@cluster0.rwu0yz6.mongodb.net/?retryWrites=true&w=majority',options)
     .then(() => {
         app.listen(1337)
         console.log('Servidor na porta 1337')
